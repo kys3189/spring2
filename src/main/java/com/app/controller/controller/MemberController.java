@@ -1,6 +1,7 @@
 package com.app.controller.controller;
 
 import com.app.controller.domain.MemberVO;
+import com.app.controller.domain.ProdectVO;
 import com.app.controller.mapper.MemberMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class MemberController {
 //    포워드
     @GetMapping("join")
     public void goToJoinForm(MemberVO memberVO) {;}
-
+//    회원가입 확인
 //    리다이렉트
     @PostMapping("join")
     public RedirectView join(MemberVO memberVO) {
@@ -40,13 +41,14 @@ public class MemberController {
 //    로그인
     @GetMapping("login")
     public void goToLogin(MemberVO memberVO) {;}
-
+//    로그인 확인
     @PostMapping("login")
     public RedirectView login(MemberVO memberVO, RedirectAttributes redirectAttributes) {
         log.info(memberVO.toString());
         Optional<MemberVO> foundMember = memberMapper.select(memberVO);
         if (foundMember.isPresent()) {
             session.setAttribute("member", foundMember.get());
+            session.setAttribute("product", new ProdectVO());
             return new RedirectView("/post/list");
         }
 //        session.flash 영역
@@ -56,6 +58,14 @@ public class MemberController {
 //        따라서 과부화의 부담이 줄어든다.
         redirectAttributes.addFlashAttribute("login", false);
         return new RedirectView("/member/login");
-    }
 
+
+    }
+//    로그아웃
+    @GetMapping("logout")
+    public RedirectView logout() {
+//        session.removeAttribute("member");
+        session.invalidate();
+        return new RedirectView("/member/login");
+    }
 }
